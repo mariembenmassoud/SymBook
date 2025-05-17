@@ -1,0 +1,24 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Vérifiez votre email{% endblock %}
+
+{% block body %}
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-md-8 col-lg-6">
+            <div class="card shadow rounded-4 border-0">
+                <div class="card-body text-center p-5">
+                    <i class="bi bi-envelope-check-fill text-primary display-4 mb-4"></i>
+                    <h2 class="mb-3">Vérifiez votre boîte mail</h2>
+                    <p class="mb-2">Merci pour votre inscription !</p>
+                    <p class="text-muted">Un lien de confirmation vous a été envoyé. Veuillez cliquer dessus pour activer votre compte.</p>
+                    <p class="text-muted">Vous ne voyez pas l’e-mail ? Vérifiez vos spams ou réessayez plus tard.</p>
+                    <a href="{{ path('app_login') }}" class="btn btn-outline-primary mt-3">
+                        Retour à la connexion
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,23 @@
+<h2 style="text-align: center; color: #0d6efd;">Confirmation de votre adresse email</h2>
+
+<p>Bonjour,</p>
+
+<p>
+    Merci pour votre inscription sur notre site. Pour finaliser la création de votre compte, veuillez cliquer sur le bouton ci-dessous :
+</p>
+
+<div style="text-align: center; margin: 30px 0;">
+    <a href="{{ signedUrl }}" style="background-color: #0d6efd; color: white; padding: 12px 24px; border-radius: 5px; text-decoration: none; font-weight: bold;">
+        Confirmer mon adresse email
+    </a>
+</div>
+
+<p>
+    Ce lien expirera dans <strong>{{ expiresAtMessageKey|trans(expiresAtMessageData, 'VerifyEmailBundle') }}</strong>.
+</p>
+
+<p style="color: #6c757d;">
+    Si vous n’avez pas créé de compte, vous pouvez ignorer cet e-mail en toute sécurité.
+</p>
+
+<p style="margin-top: 40px;">L’équipe de <strong>Fac'Tuel</strong></p>
