@@ -6,14 +6,6 @@ use App\Entity\Livre;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
 
-/**
- * @extends ServiceEntityRepository<Livre>
- *
- * @method Livre|null find($id, $lockMode = null, $lockVersion = null)
- * @method Livre|null findOneBy(array $criteria, array $orderBy = null)
- * @method Livre[]    findAll()
- * @method Livre[]    findBy(array $criteria, array $orderBy = null, $limit = null, $offset = null)
- */
 class LivreRepository extends ServiceEntityRepository
 {
     public function __construct(ManagerRegistry $registry)
@@ -21,28 +13,29 @@ class LivreRepository extends ServiceEntityRepository
         parent::__construct($registry, Livre::class);
     }
 
-//    /**
-//     * @return Livre[] Returns an array of Livre objects
-//     */
-//    public function findByExampleField($value): array
-//    {
-//        return $this->createQueryBuilder('l')
-//            ->andWhere('l.exampleField = :val')
-//            ->setParameter('val', $value)
-//            ->orderBy('l.id', 'ASC')
-//            ->setMaxResults(10)
-//            ->getQuery()
-//            ->getResult()
-//        ;
-//    }
+    /**
+     * Recherche de livres par titre, auteur et catégorie.
+     *
+     * @param string|null $search Texte de recherche (titre ou auteur)
+     * @param int|null $categorieId ID de la catégorie
+     * @return Livre[]
+     */
+    public function findBySearch(?string $search, ?int $categorieId): array
+    {
+        $qb = $this->createQueryBuilder('l')
+            ->leftJoin('l.categorie', 'c')
+            ->addSelect('c');
 
-//    public function findOneBySomeField($value): ?Livre
-//    {
-//        return $this->createQueryBuilder('l')
-//            ->andWhere('l.exampleField = :val')
-//            ->setParameter('val', $value)
-//            ->getQuery()
-//            ->getOneOrNullResult()
-//        ;
-//    }
+        if ($search) {
+            $qb->andWhere('l.title LIKE :search OR l.auteur LIKE :search')
+               ->setParameter('search', '%' . $search . '%');
+        }
+
+        if ($categorieId) {
+            $qb->andWhere('c.id = :cat')
+               ->setParameter('cat', $categorieId);
+        }
+
+        return $qb->getQuery()->getResult();
+    }
 }

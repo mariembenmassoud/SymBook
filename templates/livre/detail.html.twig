@@ -1,0 +1,15 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Détail du livre{% endblock %}
+
+{% block body %}
+    <h1>Détail du livre</h1>
+
+    <img src="https://picsum.photos/seed/{{ livre.id }}/400/300" alt="{{ livre.title }}" class="img-fluid mb-3">
+
+    <p><strong>Titre :</strong> {{ livre.title }}</p>
+    <p><strong>Auteur :</strong> {{ livre.auteur }}</p>
+    <p><strong>Description :</strong> {{ livre.description }}</p>
+
+    <a href="{{ path('livre_index') }}" class="btn btn-secondary">Retour à la liste</a>
+{% endblock %}

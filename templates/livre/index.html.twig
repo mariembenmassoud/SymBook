@@ -1,0 +1,49 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Liste des livres{% endblock %}
+
+{% block body %}
+<div class="container mt-4">
+    <h1 class="mb-4">Nos Livres</h1>
+
+    <form method="get" action="{{ path('livre_index') }}" class="mb-4 row g-3">
+        <div class="col-md-6">
+            <input type="text" name="search" class="form-control" placeholder="Rechercher par titre ou auteur" value="{{ app.request.get('search') }}">
+        </div>
+        <div class="col-md-4">
+            <select name="categorie" class="form-select">
+                <option value="">Toutes les catégories</option>
+                {% for categorie in categories %}
+                    <option value="{{ categorie.id }}" {% if app.request.get('categorie') == categorie.id %}selected{% endif %}>
+                        {{ categorie.nom }}
+                    </option>
+                {% endfor %}
+            </select>
+        </div>
+        <div class="col-md-2">
+            <button type="submit" class="btn btn-primary w-100">Filtrer</button>
+        </div>
+    </form>
+
+    <div class="row">
+        {% for livre in livres %}
+            <div class="col-md-4 mb-4">
+                <div class="card h-100">
+                    <img src="https://picsum.photos/seed/{{ livre.id }}/300/200" class="card-img-top" alt="{{ livre.title }}">
+                    <div class="card-body">
+                        <h5 class="card-title">{{ livre.title }}</h5>
+                        <p class="card-text"><strong>Auteur :</strong> {{ livre.auteur }}</p>
+                        <p class="card-text"><strong>Prix :</strong> {{ livre.prix }} TND</p>
+                        <div class="d-flex justify-content-between">
+                            <a href="{{ path('livre_detail', { id: livre.id }) }}" class="btn btn-outline-secondary">Voir détail</a>
+                            <a href="{{ path('panier_ajouter', { id: livre.id }) }}" class="btn btn-success">Ajouter au panier</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        {% else %}
+            <p>Aucun livre trouvé.</p>
+        {% endfor %}
+    </div>
+</div>
+{% endblock %}

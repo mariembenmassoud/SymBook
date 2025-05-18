@@ -1,0 +1,42 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Détails de la commande {{ commande.id }}{% endblock %}
+
+{% block body %}
+<h1>Détails de la commande n°{{ commande.id }}</h1>
+
+<ul>
+    <li><strong>Date :</strong> {{ commande.dateCommande ? commande.dateCommande|date('d/m/Y H:i') : 'N/A' }}</li>
+    <li><strong>Montant total :</strong> {{ commande.montantTotal }} €</li>
+    <li><strong>Statut :</strong> {{ commande.statut }}</li>
+    <li><strong>Mode de paiement :</strong> {{ commande.modePaiement ?: 'N/A' }}</li>
+</ul>
+
+<h2>Lignes de commande</h2>
+<table class="table table-bordered">
+    <thead>
+        <tr>
+            <th>Produit</th>
+            <th>Quantité</th>
+            <th>Prix unitaire</th>
+            <th>Sous-total</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for ligne in commande.ligneCommandes %}
+            <tr>
+                <td>{{ ligne.produit.nom }}</td>
+                <td>{{ ligne.quantite }}</td>
+                <td>{{ ligne.prixUnitaire }} DT</td>
+                <td>{{ (ligne.prixUnitaire * ligne.quantite)|number_format(2, ',', ' ') }} €</td>
+            </tr>
+        {% else %}
+            <tr>
+                <td colspan="4">Aucune ligne de commande.</td>
+            </tr>
+        {% endfor %}
+    </tbody>
+</table>
+
+<a href="{{ path('commande_index') }}" class="btn btn-secondary mt-3">Retour à la liste</a>
+{% endblock %}

@@ -1,0 +1,54 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Mon Panier{% endblock %}
+
+{% block body %}
+<h1>Mon Panier</h1>
+
+{% if livres|length > 0 %}
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Titre</th>
+                <th>Auteur</th>
+                <th>Quantité</th>
+                <th>Prix unitaire</th>
+                <th>Total</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for livre in livres %}
+                <tr>
+                    <td>{{ livre.title }}</td>
+                    <td>{{ livre.auteur }}</td>
+                    <td>
+                        <form action="{{ path('panier_modifier', {'id': livre.id}) }}" method="post" class="d-flex">
+                            <input type="number" name="quantite" value="{{ quantites[livre.id] }}" min="1" class="form-control form-control-sm me-2" style="width: 70px;">
+                            <button type="submit" class="btn btn-sm btn-primary">Modifier</button>
+                        </form>
+                    </td>
+                    <td>{{ livre.prix|number_format(2, ',', ' ') }} DT</td>
+                    <td>{{ (livre.prix * quantites[livre.id])|number_format(2, ',', ' ') }} DT</td>
+                    <td>
+                        <a href="{{ path('panier_supprimer', {'id': livre.id}) }}" class="btn btn-danger btn-sm">Supprimer</a>
+                    </td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+    <h3>
+        Total du panier : 
+        {{ livres|reduce((total, livre) => total + (livre.prix * quantites[livre.id]), 0) | number_format(2, ',', ' ') }} DT
+    </h3>
+
+    <a href="{{ path('livre_index') }}" class="btn btn-primary">Continuer mes achats</a>
+    <a href="{{ path('commande_valider_panier') }}" class="btn btn-success">Valider la commande</a>
+
+{% else %}
+    <p>Votre panier est vide.</p>
+    <a href="{{ path('livre_index') }}" class="btn btn-primary">Voir les livres</a>
+{% endif %}
+
+{% endblock %}

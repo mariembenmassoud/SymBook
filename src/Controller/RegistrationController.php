@@ -33,7 +33,6 @@ class RegistrationController extends AbstractController
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
-            // encode the plain password
             $user->setPassword(
                 $userPasswordHasher->hashPassword(
                     $user,
@@ -44,7 +43,6 @@ class RegistrationController extends AbstractController
             $entityManager->persist($user);
             $entityManager->flush();
 
-            // generate a signed url and email it to the user
             $this->emailVerifier->sendEmailConfirmation('app_verify_email', $user,
                 (new TemplatedEmail())
                     ->from(new Address('mariembenmassoud6@gmail.com', 'Mariem'))
@@ -55,7 +53,7 @@ class RegistrationController extends AbstractController
 
             $this->addFlash('success', 'Un email de confirmation vous a été envoyé. Veuillez vérifier votre boîte de réception.');
 
-            return $this->redirectToRoute('app_check_email');
+            return $this->redirectToRoute('app_check_email_registration');
         }
 
         return $this->render('registration/register.html.twig', [
@@ -80,7 +78,7 @@ class RegistrationController extends AbstractController
         return $this->redirectToRoute('app_login');
     }
 
-    #[Route('/check-email', name: 'check_email')]
+    #[Route('/check-email/registration', name: 'app_check_email_registration')]
     public function checkEmail(): Response
     {
         return $this->render('registration/check_email.html.twig');

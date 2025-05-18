@@ -1,0 +1,23 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Validation commande{% endblock %}
+
+{% block body %}
+    <h1>Validation de la commande</h1>
+
+    <p><strong>Date de la commande :</strong> {{ commande.dateCommande ? commande.dateCommande|date('d/m/Y H:i') : 'Non définie' }}</p>
+    <p><strong>Montant total :</strong> {{ commande.montantTotal|number_format(2, ',', ' ') }} DT</p>
+
+    <form method="post" action="{{ path('commande_valider', {'id': commande.id}) }}">
+        <label for="modePaiement">Choisir un mode de paiement :</label>
+        <select id="modePaiement" name="modePaiement" required>
+            <option value="">-- Sélectionnez --</option>
+            <option value="Carte bancaire">Carte bancaire</option>
+            <option value="Paypal">Paypal</option>
+            <option value="Virement">Virement bancaire</option>
+            <option value="Paiement à la livraison">Paiement à la livraison</option>
+        </select>
+
+        <button type="submit" class="btn btn-success mt-3">Valider la commande</button>
+    </form>
+{% endblock %}

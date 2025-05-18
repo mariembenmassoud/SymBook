@@ -1,5 +1,3 @@
-# config/routes.yaml
-
 app_register:
     path: /register
     controller: App\Controller\RegistrationController::register
@@ -26,3 +24,49 @@ app_check_email:
 app_reset_password:
     path: /reset-password/reset/{token}
     controller: App\Controller\ResetPasswordController::reset
+
+# --- Ajout des routes pour les livres ---
+
+livre_list:
+    path: /livres
+    controller: App\Controller\LivreController::index
+
+livre_detail:
+    path: /livre/{id}
+    controller: App\Controller\LivreController::detail
+    requirements:
+        id: '\d+'
+
+# --- Routes panier ---
+
+panier_ajouter:
+    path: /panier/ajouter/{id}
+    controller: App\Controller\PanierController::ajouter
+    requirements:
+        id: '\d+'
+
+panier_supprimer:
+    path: /panier/supprimer/{id}
+    controller: App\Controller\PanierController::supprimer
+    requirements:
+        id: '\d+'
+
+panier:
+    path: /panier
+    controller: App\Controller\PanierController::afficher
+
+commande_valider_panier:
+    path: /commande/valider-panier
+    controller: App\Controller\CommandeController::validerPanier
+
+# --- Routes commandes (consultation) ---
+
+commande_index:
+    path: /commandes
+    controller: App\Controller\CommandeController::index
+
+commande_show:
+    path: /commande/{id}
+    controller: App\Controller\CommandeController::show
+    requirements:
+        id: '\d+'

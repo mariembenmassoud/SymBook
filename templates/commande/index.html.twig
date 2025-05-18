@@ -1,0 +1,36 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Mes Commandes{% endblock %}
+
+{% block body %}
+<h1>Mes Commandes</h1>
+
+<table class="table table-striped">
+    <thead>
+        <tr>
+            <th>ID</th>
+            <th>Date</th>
+            <th>Montant Total</th>
+            <th>Statut</th>
+            <th>Détails</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for commande in commandes %}
+            <tr>
+                <td>{{ commande.id }}</td>
+                <td>{{ commande.dateCommande ? commande.dateCommande|date('d/m/Y H:i') : '' }}</td>
+                <td>{{ commande.montantTotal }} DT</td>
+                <td>{{ commande.statut }}</td>
+                <td>
+                    <a href="{{ path('commande_show', {'id': commande.id}) }}" class="btn btn-primary btn-sm">Voir</a>
+                </td>
+            </tr>
+        {% else %}
+            <tr>
+                <td colspan="5">Aucune commande trouvée.</td>
+            </tr>
+        {% endfor %}
+    </tbody>
+</table>
+{% endblock %}
