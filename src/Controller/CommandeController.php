@@ -4,6 +4,7 @@ namespace App\Controller;
 
 use App\Repository\CommandeRepository;
 use App\Entity\Commande;
+use App\Entity\Livre;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Session\SessionInterface;
@@ -56,41 +57,48 @@ class CommandeController extends AbstractController
     }
 
     #[Route('/commande/valider-panier', name: 'commande_valider_panier')]
-    public function validerPanier(SessionInterface $session, EntityManagerInterface $em): Response
-    {
-        $panier = $session->get('panier', []);
+public function validerPanier(SessionInterface $session, EntityManagerInterface $em): Response
+{
+    $panier = $session->get('panier', []);
 
-        if (empty($panier)) {
-            $this->addFlash('warning', 'Votre panier est vide.');
-            return $this->redirectToRoute('panier');
-        }
-
-        $user = $this->getUser();
-        if (!$user) {
-            $this->addFlash('error', 'Veuillez vous connecter pour valider votre panier.');
-            return $this->redirectToRoute('app_login');
-        }
-
-        $montantTotal = 0;
-        foreach ($panier as $livreId => $quantite) {
-            $prixUnitaire = 10; // À adapter
-            $montantTotal += $prixUnitaire * $quantite;
-        }
-
-        $commande = new Commande();
-        $commande->setDateCommande(new \DateTime());
-        $commande->setMontantTotal($montantTotal);
-        $commande->setModePaiement(null);
-        $commande->setStatut('En attente');
-        $commande->setUtilisateur($user); // Lien avec utilisateur
-
-        $em->persist($commande);
-        $em->flush();
-
-        $session->remove('panier');
-
-        return $this->redirectToRoute('commande_valider', ['id' => $commande->getId()]);
+    if (empty($panier)) {
+        $this->addFlash('warning', 'Votre panier est vide.');
+        return $this->redirectToRoute('panier');
     }
+
+    $user = $this->getUser();
+    if (!$user) {
+        $this->addFlash('error', 'Veuillez vous connecter pour valider votre panier.');
+        return $this->redirectToRoute('app_login');
+    }
+
+    $montantTotal = 0;
+
+    foreach ($panier as $livreId => $quantite) {
+        $livre = $em->getRepository(Livre::class)->find($livreId);
+        if (!$livre) {
+            continue; // ou ajoute un message d'erreur si besoin
+        }
+
+        $prixUnitaire = $livre->getPrix(); // méthode getPrix() dans l'entité Livre
+        $montantTotal += $prixUnitaire * $quantite;
+    }
+
+    $commande = new Commande();
+    $commande->setDateCommande(new \DateTime());
+    $commande->setMontantTotal($montantTotal);
+    $commande->setModePaiement(null);
+    $commande->setStatut('En attente');
+    $commande->setUtilisateur($user);
+
+    $em->persist($commande);
+    $em->flush();
+
+    $session->remove('panier');
+
+    return $this->redirectToRoute('commande_valider', ['id' => $commande->getId()]);
+}
+
 
     #[Route('/commandes', name: 'commande_index')]
     public function index(CommandeRepository $commandeRepository): Response

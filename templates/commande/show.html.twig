@@ -7,7 +7,7 @@
 
 <ul>
     <li><strong>Date :</strong> {{ commande.dateCommande ? commande.dateCommande|date('d/m/Y H:i') : 'N/A' }}</li>
-    <li><strong>Montant total :</strong> {{ commande.montantTotal }} €</li>
+    <li><strong>Montant total :</strong> {{ commande.montantTotal }} DT</li>
     <li><strong>Statut :</strong> {{ commande.statut }}</li>
     <li><strong>Mode de paiement :</strong> {{ commande.modePaiement ?: 'N/A' }}</li>
 </ul>
