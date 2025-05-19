@@ -44,11 +44,24 @@ class LoginFormAuthenticator extends AbstractLoginFormAuthenticator
 
     public function onAuthenticationSuccess(Request $request, TokenInterface $token, string $firewallName): ?Response
     {
-        if ($targetPath = $this->getTargetPath($request->getSession(), $firewallName)) {
+        $session = $request->getSession();
+
+        // Redirection vers une page cible mémorisée automatiquement
+        if ($targetPath = $this->getTargetPath($session, $firewallName)) {
             return new RedirectResponse($targetPath);
         }
 
-        
+        // Redirection spéciale après tentative de validation de commande
+        if ($session->has('redirect_commande_id')) {
+            $commandeId = $session->get('redirect_commande_id');
+            $session->remove('redirect_commande_id');
+
+            return new RedirectResponse($this->urlGenerator->generate('commande_valider', [
+                'id' => $commandeId,
+            ]));
+        }
+
+        // Redirection par défaut après login
         return new RedirectResponse($this->urlGenerator->generate('livre_index'));
     }
 

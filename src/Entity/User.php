@@ -2,6 +2,9 @@
 
 namespace App\Entity;
 
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
+use App\Entity\Commande;
 use App\Repository\UserRepository;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
@@ -105,4 +108,17 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         $this->isVerified = $isVerified;
         return $this;
     }
+
+    #[ORM\OneToMany(mappedBy: 'utilisateur', targetEntity: Commande::class)]
+private Collection $commandes;
+
+public function __construct()
+{
+    $this->commandes = new ArrayCollection();
+}
+
+public function getCommandes(): Collection
+{
+    return $this->commandes;
+}
 }

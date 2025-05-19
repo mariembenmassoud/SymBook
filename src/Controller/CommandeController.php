@@ -1,4 +1,5 @@
 <?php
+
 namespace App\Controller;
 
 use App\Repository\CommandeRepository;
@@ -14,12 +15,19 @@ class CommandeController extends AbstractController
 {
     #[Route('/commande/valider/{id}', name: 'commande_valider', methods: ['GET', 'POST'])]
     public function valider(
-        int $id, 
-        CommandeRepository $commandeRepository, 
-        Request $request, 
-        EntityManagerInterface $em
-    ): Response
-    {
+        int $id,
+        CommandeRepository $commandeRepository,
+        Request $request,
+        EntityManagerInterface $em,
+        SessionInterface $session
+    ): Response {
+        $user = $this->getUser();
+        if (!$user) {
+            $this->addFlash('error', 'Veuillez vous inscrire ou vous connecter pour valider la commande.');
+            $session->set('redirect_commande_id', $id);
+            return $this->redirectToRoute('app_login');
+        }
+
         $commande = $commandeRepository->find($id);
 
         if (!$commande) {
@@ -36,7 +44,6 @@ class CommandeController extends AbstractController
 
                 $this->addFlash('success', 'Commande validée avec succès !');
 
-                // Redirection vers la liste des livres après validation
                 return $this->redirectToRoute('livre_index');
             } else {
                 $this->addFlash('error', 'Veuillez choisir un mode de paiement.');
@@ -58,18 +65,24 @@ class CommandeController extends AbstractController
             return $this->redirectToRoute('panier');
         }
 
+        $user = $this->getUser();
+        if (!$user) {
+            $this->addFlash('error', 'Veuillez vous connecter pour valider votre panier.');
+            return $this->redirectToRoute('app_login');
+        }
+
         $montantTotal = 0;
         foreach ($panier as $livreId => $quantite) {
-            $prixUnitaire = 10; // Exemple fixe, adapte à ta logique
+            $prixUnitaire = 10; // À adapter
             $montantTotal += $prixUnitaire * $quantite;
         }
 
-        // Par défaut on met "En attente" et sans mode de paiement, à choisir ensuite dans la validation
         $commande = new Commande();
         $commande->setDateCommande(new \DateTime());
         $commande->setMontantTotal($montantTotal);
         $commande->setModePaiement(null);
         $commande->setStatut('En attente');
+        $commande->setUtilisateur($user); // Lien avec utilisateur
 
         $em->persist($commande);
         $em->flush();
@@ -79,24 +92,30 @@ class CommandeController extends AbstractController
         return $this->redirectToRoute('commande_valider', ['id' => $commande->getId()]);
     }
 
-        #[Route('/commandes', name: 'commande_index')]
+    #[Route('/commandes', name: 'commande_index')]
     public function index(CommandeRepository $commandeRepository): Response
     {
-        // Récupère toutes les commandes (à adapter selon tes besoins, p.ex. commandes de l'utilisateur connecté)
-        $commandes = $commandeRepository->findAll();
+        $user = $this->getUser();
+        $commandes = $commandeRepository->findBy(['utilisateur' => $user]);
 
         return $this->render('commande/index.html.twig', [
             'commandes' => $commandes,
         ]);
     }
 
-       #[Route('/commande/{id}', name: 'commande_show', requirements: ['id' => '\d+'])]
-    public function show(Commande $commande): Response
-    {
-        // $commande est injectée automatiquement via ParamConverter
+#[Route('/commande/{id}', name: 'commande_show', requirements: ['id' => '\d+'])]
+public function show(Commande $commande): Response
+{
+    $user = $this->getUser();
 
-        return $this->render('commande/show.html.twig', [
-            'commande' => $commande,
-        ]);
+    // Vérifie si l'utilisateur connecté est bien le propriétaire de la commande
+    if ($commande->getUtilisateur() !== $user) {
+        throw $this->createAccessDeniedException("Vous n'avez pas accès à cette commande.");
     }
+
+    return $this->render('commande/show.html.twig', [
+        'commande' => $commande,
+    ]);
+}
+
 }

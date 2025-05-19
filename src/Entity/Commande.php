@@ -1,6 +1,6 @@
 <?php
 namespace App\Entity;
-
+use App\Entity\User;
 use App\Repository\CommandeRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
@@ -116,4 +116,18 @@ class Commande
 
         return $this;
     }
+
+    #[ORM\ManyToOne(targetEntity: User::class, inversedBy: 'commandes')]
+private ?User $utilisateur = null;
+
+public function getUtilisateur(): ?User
+{
+    return $this->utilisateur;
+}
+
+public function setUtilisateur(?User $utilisateur): self
+{
+    $this->utilisateur = $utilisateur;
+    return $this;
+}
 }

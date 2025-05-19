@@ -27,7 +27,7 @@ security:
             logout:
                 path: app_logout   # Nom de la route logout
                 target: app_login  # Redirection après déconnexion
-
+                invalidate_session: false
             remember_me:
                 secret: '%kernel.secret%'
                 lifetime: 604800
